@@ -11,6 +11,8 @@ export interface AuthUser {
   role: UserRole
 }
 
+let isLoggingOut = false
+
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'))
   const user = ref<AuthUser | null>(null)
@@ -39,12 +41,22 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout() {
-    token.value = null
-    user.value = null
-    localStorage.removeItem('token')
-    api.post('/logout').catch(() => {})
+  async function logout() {
+    isLoggingOut = true
+    try {
+      await api.post('/logout')
+    } catch {
+    } finally {
+      token.value = null
+      user.value = null
+      localStorage.removeItem('token')
+      isLoggingOut = false
+    }
   }
 
   return { token, user, isLoggedIn, isAdmin, setToken, setUser, fetchUser, logout }
 })
+
+export function isActiveLogout() {
+  return isLoggingOut
+}

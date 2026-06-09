@@ -52,8 +52,8 @@ onMounted(() => {
   if (auth.token && !auth.user) auth.fetchUser()
 })
 
-function logout() {
-  auth.logout()
+async function logout() {
+  await auth.logout()
   window.location.href = '/'
 }
 </script>

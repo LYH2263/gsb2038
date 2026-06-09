@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { isActiveLogout } from '../stores/auth'
 
 const api = axios.create({
   baseURL: '/api',
@@ -19,7 +20,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (r) => r,
   (e) => {
-    if (e.response?.status === 401) {
+    if (e.response?.status === 401 && !isActiveLogout()) {
       localStorage.removeItem('token')
       if (!window.location.pathname.startsWith('/login')) window.location.href = '/login'
     }
