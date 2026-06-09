@@ -39,11 +39,19 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout() {
+  async function logout() {
+    // 必须在清空 token 之前发起请求，否则请求拦截器拿不到 Authorization，
+    // 服务端无法识别当前 token，导致旧 token 实际未被吊销。
+    if (token.value) {
+      try {
+        await api.post('/logout', null, { skipAuthRedirect: true } as any)
+      } catch {
+        // 即便服务端调用失败，也继续完成本地登出
+      }
+    }
     token.value = null
     user.value = null
     localStorage.removeItem('token')
-    api.post('/logout').catch(() => {})
   }
 
   return { token, user, isLoggedIn, isAdmin, setToken, setUser, fetchUser, logout }
