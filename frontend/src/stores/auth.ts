@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import api from '../api'
+import api, { setSkipAuthRedirect } from '../api'
 
 export type UserRole = 'user' | 'admin'
 
@@ -39,11 +39,17 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout() {
-    token.value = null
-    user.value = null
-    localStorage.removeItem('token')
-    api.post('/logout').catch(() => {})
+  async function logout() {
+    setSkipAuthRedirect(true)
+    try {
+      await api.post('/logout')
+    } catch {
+    } finally {
+      setSkipAuthRedirect(false)
+      token.value = null
+      user.value = null
+      localStorage.removeItem('token')
+    }
   }
 
   return { token, user, isLoggedIn, isAdmin, setToken, setUser, fetchUser, logout }

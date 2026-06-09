@@ -5,6 +5,12 @@ const api = axios.create({
   headers: { Accept: 'application/json' },
 })
 
+let skipAuthRedirect = false
+
+export function setSkipAuthRedirect(v: boolean) {
+  skipAuthRedirect = v
+}
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) config.headers.Authorization = `Bearer ${token}`
@@ -21,7 +27,9 @@ api.interceptors.response.use(
   (e) => {
     if (e.response?.status === 401) {
       localStorage.removeItem('token')
-      if (!window.location.pathname.startsWith('/login')) window.location.href = '/login'
+      if (!skipAuthRedirect && !window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(e)
   }
