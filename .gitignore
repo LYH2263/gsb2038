@@ -1,0 +1,40 @@
+# ===== 依赖目录（不锁定到根目录，backend/frontend 均生效）=====
+node_modules/
+vendor/
+
+# ===== 环境与密钥 =====
+.env
+.env.local
+.env.*.local
+*.pem
+
+# ===== 日志与缓存 =====
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# ===== Laravel 后端 =====
+backend/storage/*.key
+backend/storage/app/**
+backend/storage/framework/cache/**
+backend/storage/framework/sessions/**
+backend/storage/framework/views/**
+backend/storage/logs/**
+backend/bootstrap/cache/*.php
+backend/.phpunit.result.cache
+
+# ===== 前端构建产物 =====
+dist/
+build/
+.vite/
+*.local
+
+# ===== 系统与编辑器 =====
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# ===== 题目与对话记录 =====
+/题目.md
+/对话/
