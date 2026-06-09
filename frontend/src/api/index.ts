@@ -19,7 +19,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (r) => r,
   (e) => {
-    if (e.response?.status === 401) {
+    // 允许调用方通过 config.skipAuthRedirect=true 跳过全局 401 跳登录页逻辑
+    // 用于"主动退出"等场景：即便服务端返回非 2xx，也不应被动跳到登录页
+    const skipAuthRedirect = (e.config as any)?.skipAuthRedirect === true
+    if (e.response?.status === 401 && !skipAuthRedirect) {
       localStorage.removeItem('token')
       if (!window.location.pathname.startsWith('/login')) window.location.href = '/login'
     }
