@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import api from '../api'
+import api, { markLogout, clearLogoutMark } from '../api'
 
 export type UserRole = 'user' | 'admin'
 
@@ -39,11 +39,17 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout() {
+  async function logout() {
+    markLogout()
+    try {
+      await api.post('/logout')
+    } catch {
+    } finally {
+      clearLogoutMark()
+    }
     token.value = null
     user.value = null
     localStorage.removeItem('token')
-    api.post('/logout').catch(() => {})
   }
 
   return { token, user, isLoggedIn, isAdmin, setToken, setUser, fetchUser, logout }
